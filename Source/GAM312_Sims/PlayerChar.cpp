@@ -100,28 +100,37 @@ void APlayerChar::FindObject()
 	{
 		AResource_M* HitResource = Cast<AResource_M>(HitResult.GetActor());
 
+		//checks if player has enough stamina
 		if (Stamina > 5.0f)
 		{
+			//checks if looking at hit resource
 			if (HitResource)
 			{
+				//determines resource type
 				FString hitName = HitResource->resourceName;
 				int resourceValue = HitResource->resourceAmount;
 
+				//subtracts resource value from hit resource
 				HitResource->totalResource = HitResource->totalResource - resourceValue;
 
+				//checks if resource has enough resources to collect
 				if (HitResource->totalResource > resourceValue)
 				{
 					GiveResource(resourceValue, hitName);
 
+					//debug message
 					check(GEngine != nullptr);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Resource Collected"));
 
+					//spawns decal
 					UGameplayStatics::SpawnDecalAtLocation(GetWorld(), hitDecal, FVector(10.0f, 10.0f, 10.0f), HitResult.Location, FRotator(-90, 0, 0), 2.0f);
 
+					//depletes stamina
 					SetStamina(-5.0f);
 				}
 				else
 				{
+					//if resource doesnt have enough, delete it
 					HitResource->Destroy();
 					check(GEngine != nullptr);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Resource Depleted"));
@@ -176,7 +185,7 @@ void APlayerChar::DecreaseStats()
 
 void APlayerChar::GiveResource(float amount, FString resourceType)
 {
-
+	//checks resource type and adds the correct amount to array
 	if (resourceType == "Wood")
 	{
 

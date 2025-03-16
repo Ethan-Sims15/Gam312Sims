@@ -50,7 +50,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* PlayerCamComp;
 
-	//Establishing Player Stats Variables
+	//Establishing Player Stats functions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 		float Health = 100.0f;
 
@@ -60,7 +60,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 		float Stamina = 100.0f;
 
+	UFUNCTION(BlueprintCallable)
+		void SetHealth(float amount);
 
+	UFUNCTION(BlueprintCallable)
+		void SetHunger(float amount);
+
+	UFUNCTION(BlueprintCallable)
+		void SetStamina(float amount);
+
+	UFUNCTION()
+		void DecreaseStats();
+
+
+	//Establishing resource collection functions
 	UPROPERTY(EditAnywhere, Category = "Resources")
 		int Wood;
 	
@@ -79,19 +92,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "HitMarker")
 		UMaterialInterface* hitDecal;
 
-	UFUNCTION(BlueprintCallable)
-		void SetHealth(float amount);
-
-	UFUNCTION(BlueprintCallable)
-		void SetHunger(float amount);
-
-	UFUNCTION(BlueprintCallable)
-		void SetStamina(float amount);
-
 	UFUNCTION()
-		void DecreaseStats();
-
-	UFUNCTION()
-	void GiveResource(float amount, FString resourceType);
+		void GiveResource(float amount, FString resourceType);
 
 };
