@@ -44,6 +44,7 @@ void APlayerChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	playerUI->UpdateBars(Health, Hunger, Stamina);
 
 	//Building logic
 	if (isBuilding)
@@ -236,6 +237,8 @@ void APlayerChar::GiveResource(float amount, FString resourceType)
 
 void APlayerChar::UpdateResources(float woodAmount, float stoneAmount, FString buildingObject)
 {
+
+	//if resources are less than in the array then updates the array
 	if (woodAmount <= ResourcesArray[0])
 	{
 		if (stoneAmount <= ResourcesArray[1])
@@ -243,6 +246,7 @@ void APlayerChar::UpdateResources(float woodAmount, float stoneAmount, FString b
 			ResourcesArray[0] = ResourcesArray[0] - woodAmount;
 			ResourcesArray[1] = ResourcesArray[1] - stoneAmount;
 
+			//checks which part is built then updates their amount in the array
 			if (buildingObject == "Wall")
 			{
 				BuildingArray[0] = BuildingArray[0] + 1;
