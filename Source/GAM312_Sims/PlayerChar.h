@@ -25,7 +25,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -34,105 +34,114 @@ public:
 
 	//establishing functions for player movement
 	UFUNCTION()
-		void MoveForward(float axisValue);
+	void MoveForward(float axisValue);
 
 	UFUNCTION()
-		void MoveRight(float axisValue);
+	void MoveRight(float axisValue);
 
 	UFUNCTION()
-		void StartJump();
+	void StartJump();
 
 	UFUNCTION()
-		void StopJump();
+	void StopJump();
 
 	//establishing functions for player interaction
 	UFUNCTION()
-		void FindObject();
+	void FindObject();
 
 	//establishing functions for player camera
 	UPROPERTY(VisibleAnywhere)
-		UCameraComponent* PlayerCamComp;
+	UCameraComponent* PlayerCamComp;
 
 	//Establishing Player Stats functions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		float Health = 100.0f;
+	float Health = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		float Hunger = 100.0f;
+	float Hunger = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		float Stamina = 100.0f;
+	float Stamina = 100.0f;
 
 	UFUNCTION(BlueprintCallable)
-		void SetHealth(float amount);
+	void SetHealth(float amount);
 
 	UFUNCTION(BlueprintCallable)
-		void SetHunger(float amount);
+	void SetHunger(float amount);
 
 	UFUNCTION(BlueprintCallable)
-		void SetStamina(float amount);
+	void SetStamina(float amount);
 
 	UFUNCTION()
-		void DecreaseStats();
+	void DecreaseStats();
 
 
 	//Establishing resource collection functions
 	UPROPERTY(EditAnywhere, Category = "Resources")
-		int Wood;
-	
-	UPROPERTY(EditAnywhere, Category = "Resources") 
-		int Stone;
-	
+	int Wood;
+
 	UPROPERTY(EditAnywhere, Category = "Resources")
-		int Berry;
-	
+	int Stone;
+
+	UPROPERTY(EditAnywhere, Category = "Resources")
+	int Berry;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
-		TArray<int> ResourcesArray;
-	
+	TArray<int> ResourcesArray;
+
 	UPROPERTY(EditAnywhere, Category = "Resources")
-		TArray<FString> ResourcesNameArray;
+	TArray<FString> ResourcesNameArray;
 
 	UPROPERTY(EditAnywhere, Category = "HitMarker")
-		UMaterialInterface* hitDecal;
+	UMaterialInterface* hitDecal;
 
 	UFUNCTION()
-		void GiveResource(float amount, FString resourceType);
+	void GiveResource(float amount, FString resourceType);
 
 	//Establishing building functions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Supplies")
-		TArray<int> BuildingArray;
+	TArray<int> BuildingArray;
 
 	UPROPERTY()
-		bool isBuilding;
+	bool isBuilding;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		TSubclassOf<ABuildingPart> BuildPartClass;
+	TSubclassOf<ABuildingPart> BuildPartClass;
 
 	UPROPERTY()
-		ABuildingPart* spawnedPart;
+	ABuildingPart* spawnedPart;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPlayerWidget* playerUI;
+	UPlayerWidget* playerUI;
 
 	UFUNCTION(BlueprintCallable)
-		void UpdateResources(float woodAmount, float stoneAmount, FString buildingObject);
+	void UpdateResources(float woodAmount, float stoneAmount, FString buildingObject);
 
 	UFUNCTION(BlueprintCallable)
-		void SpawnBuilding(int buildingID, bool& isSuccess);
+	void SpawnBuilding(int buildingID, bool& isSuccess);
 
 	UFUNCTION()
-		void RotateBuilding();
+	void RotateBuilding();
 
 	//Establishing Objective functions
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UObjectiveWidget* objWidget;
+	UObjectiveWidget* objWidget;
 
 	UPROPERTY()
-		float objectsBuilt;
+	float objectsBuilt;
 
 	UPROPERTY()
-		float matsCollected;
+	float matsCollected;
 
+	//Knife craft
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crafting")
+	bool hasKnife = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crafting")
+	float knifeMultiplier = 2.0f;
+
+	// Implemented in the player Blueprint to show the knife mesh
+	UFUNCTION(BlueprintImplementableEvent, Category = "Crafting")
+	void OnKnifeCrafted();
 };

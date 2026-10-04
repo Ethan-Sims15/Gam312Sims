@@ -61,10 +61,29 @@ void APlayerChar::Tick(float DeltaTime)
 			FVector StartLocation = PlayerCamComp->GetComponentLocation();
 			FVector Direction = PlayerCamComp->GetForwardVector() * 400.0f;
 			FVector EndLocation = StartLocation + Direction;
-			spawnedPart->SetActorLocation(EndLocation);
+
+			// Snap X/Y to the grid
+			FVector Snapped = spawnedPart->SnapLocationToGrid(EndLocation);
+
+			// Ground trace that ignores every building part, so it finds the terrain
+			FHitResult GroundHit;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+
+			TArray<AActor*> AllParts;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABuildingPart::StaticClass(), AllParts);
+			Params.AddIgnoredActors(AllParts);
+
+			FVector TraceStart = Snapped + FVector(0, 0, 500.f);
+			FVector TraceEnd = Snapped - FVector(0, 0, 2000.f);
+			if (GetWorld()->LineTraceSingleByChannel(GroundHit, TraceStart, TraceEnd, ECC_Visibility, Params))
+			{
+				Snapped.Z = GroundHit.Location.Z + spawnedPart->ZOffset;
+			}
+
+			spawnedPart->SetActorLocation(Snapped);
 		}
 	}
-
 }
 
 // Called to bind functionality to input
@@ -143,10 +162,12 @@ void APlayerChar::FindObject()
 					//checks if resource has enough resources to collect
 					if (HitResource->totalResource > resourceValue)
 					{
-						GiveResource(resourceValue, hitName);
+						// Knife doubles what you gather
+						float gain = hasKnife ? resourceValue * knifeMultiplier : (float)resourceValue;
+						GiveResource(gain, hitName);
 
 						//update mats collected objective
-						matsCollected = matsCollected + resourceValue;
+						matsCollected = matsCollected + gain;
 
 						objWidget->UpdatedmatOBJ(matsCollected);
 
@@ -253,6 +274,11 @@ void APlayerChar::GiveResource(float amount, FString resourceType)
 
 void APlayerChar::UpdateResources(float woodAmount, float stoneAmount, FString buildingObject)
 {
+	// Knife is a one-time craft, so don't charge for it twice
+	if (buildingObject == "Knife" && hasKnife)
+	{
+		return;
+	}
 
 	//if resources are less than in the array then updates the array
 	if (woodAmount <= ResourcesArray[0])
@@ -277,35 +303,37 @@ void APlayerChar::UpdateResources(float woodAmount, float stoneAmount, FString b
 			{
 				BuildingArray[2] = BuildingArray[2] + 1;
 			}
+
+			if (buildingObject == "Knife")
+			{
+				hasKnife = true;
+				OnKnifeCrafted();
+			}
 		}
 	}
-
 }
+
 
 void APlayerChar::SpawnBuilding(int buildingID, bool& isSuccess)
 {
-	if (!isBuilding)
+	isSuccess = false;
+
+	if (!isBuilding && BuildingArray[buildingID] >= 1)
 	{
-		if (BuildingArray[buildingID] >= 1)
-		{
-			isBuilding = true;
+		isBuilding = true;
 
-			FActorSpawnParameters SpawnParams;
-			FVector StartLocation = PlayerCamComp->GetComponentLocation();
-			FVector Direction = PlayerCamComp->GetForwardVector() * 400.0f;
-			FVector EndLocation = StartLocation + Direction;
-			FRotator myRot(0, 0, 0);
+		FActorSpawnParameters SpawnParams;
+		FVector StartLocation = PlayerCamComp->GetComponentLocation();
+		FVector Direction = PlayerCamComp->GetForwardVector() * 400.0f;
+		FVector EndLocation = StartLocation + Direction;
+		FRotator myRot(0, 0, 0);
 
-			BuildingArray[buildingID] = BuildingArray[buildingID] - 1;
+		BuildingArray[buildingID] = BuildingArray[buildingID] - 1;
 
-			spawnedPart = GetWorld()->SpawnActor<ABuildingPart>(BuildPartClass, EndLocation, myRot, SpawnParams);
+		spawnedPart = GetWorld()->SpawnActor<ABuildingPart>(BuildPartClass, EndLocation, myRot, SpawnParams);
 
-			isSuccess = true;
-		}
-
-		isSuccess = false;
+		isSuccess = true;
 	}
-
 }
 
 void APlayerChar::RotateBuilding()

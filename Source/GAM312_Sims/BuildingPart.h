@@ -30,4 +30,16 @@ public:
 	//Creates unified pivot point for building
 	UPROPERTY(EditAnywhere)
 		UArrowComponent* PivotArrow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
+		float GridSize = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
+		FVector SnapOffset = FVector::ZeroVector; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
+		float ZOffset = 0.0f;
+
+	UFUNCTION(BlueprintCallable, Category = "Building")
+		FVector SnapLocationToGrid(const FVector& InLocation) const;
 };

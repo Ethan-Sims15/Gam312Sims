@@ -30,3 +30,14 @@ void ABuildingPart::Tick(float DeltaTime)
 
 }
 
+FVector ABuildingPart::SnapLocationToGrid(const FVector& InLocation) const
+{
+	// Rotate the offset with the part so walls stay on the tile edge at any rotation
+	const FVector Offset = GetActorRotation().RotateVector(SnapOffset);
+
+	return FVector(
+		FMath::GridSnap(InLocation.X - Offset.X, GridSize) + Offset.X,
+		FMath::GridSnap(InLocation.Y - Offset.Y, GridSize) + Offset.Y,
+		InLocation.Z);
+}
+
